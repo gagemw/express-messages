@@ -10,12 +10,17 @@ CREATE DATABASE messages;
 
 \c messages;
 
+CREATE TABLE users (
+  id serial PRIMARY KEY,
+  name text UNIQUE
+);
+
 CREATE TABLE messages (
   id serial PRIMARY KEY,
-  name text,
+  userid integer references users(id),
   message text
 );
 
 -- Seed your data with a collection of insert statements
 -- INSERT INTO messages () VALUES ();
-INSERT INTO messages (name, message) VALUES ('Bob', 'Hello World'), ('Stanley', 'Hello Cruel World');
+-- INSERT INTO messages (name, message) VALUES ('Bob', 'Hello World'), ('Stanley', 'Hello Cruel World');

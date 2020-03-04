@@ -12,7 +12,8 @@ const pool = require('./db/pgconfig');
 app.use(bodyParser.json());
 
 app.post('/api/messages',(req,res)=>{
-   db.query('INSERT INTO MESSAGES (name,message) VALUES ($1,$2)',[req.body.name,req.body.message])
+  db.query('INSERT INTO users (name) VALUES ($1) ON CONFLICT (name) DO NOTHING',[req.body.name], ()=>{
+   db.query('INSERT INTO messages (userid, message) VALUES ((SELECT id FROM users WHERE name=$2),$1)',[req.body.message,req.body.name])
     .then(result=>{
       console.log(result);
       res.status(201).end()
@@ -21,10 +22,11 @@ app.post('/api/messages',(req,res)=>{
       console.log(error);
       res.status(400).end()
     })
+  })
 })
 
 app.get('/api/messages',(req,res)=>{
-  db.query('SELECT * FROM messages')
+  db.query('SELECT name,message FROM messages,users WHERE messages.userid=users.id')
    .then(result=>{
      console.log(result.rows);
      res.send(result.rows).end()
